@@ -1,0 +1,33 @@
+name: Auto PR, Merge, Test, and Build
+
+on:
+  push:
+    branches:
+      - "*"  # Trigger on any push to any branch
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Check for changes
+        run: |
+          git diff --exit-code || echo "Changes detected"
+
+      - name: Create a Pull Request if changes exist
+        if: success() && steps.check.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v3
+        with:
+          base: main
+          branch: ${{ github.head_ref }}
+          title: "Auto PR to main"
+          body: |
+            This is an auto-generated PR with recent changes.
+          token: ${{ secrets.GITHUB_TOKEN }}

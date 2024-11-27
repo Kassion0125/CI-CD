@@ -31,22 +31,3 @@ jobs:
           body: |
             This is an auto-generated PR with recent changes.
           token: ${{ secrets.GITHUB_TOKEN }}
-
-  merge-and-build:
-    needs: create-pr
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code again
-        uses: actions/checkout@v2
-
-      - name: Merge PR into main
-        uses: peter-evans/merge-pull-request@v3  # Correct version
-        with:
-          pull_request_number: ${{ steps.create-pr.outputs.pull_request_number }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run Tests
-        run: npm install && npm test
-
-      - name: Build Project
-        run: npm run build
